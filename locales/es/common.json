@@ -99,6 +99,12 @@
         "noDerivedModels": "No se encontraron modelos derivados",
         "syncing": "Sincronizando",
         "syncTooltip": "Sincronizar precios de modelos base a todos los modelos derivados. Esto actualizará los precios de todos los modelos derivados según los precios de su modelo base.",
+        "refreshFromLitellm": "Actualizar Precios desde LiteLLM",
+        "refreshing": "Actualizando",
+        "refreshSuccess": "Todos los precios de los modelos se actualizaron desde LiteLLM",
+        "refreshPartial": "Algunos modelos no están en la lista de precios de LiteLLM y fueron omitidos",
+        "refreshFail": "Error al actualizar los precios desde LiteLLM",
+        "refreshTooltip": "Sobrescribir los precios por token de todos los modelos con los valores actuales de la lista de precios de LiteLLM. Los precios por mensaje no se modifican.",
         "testTooltip": "Haga clic en el ícono del modelo para probar individualmente, los resultados de la prueba se mostrarán en la esquina superior derecha del ícono.",
         "test": {
             "status": {

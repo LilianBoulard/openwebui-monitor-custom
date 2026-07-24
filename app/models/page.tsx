@@ -269,6 +269,7 @@ export default function ModelsPage() {
     const [apiKey, setApiKey] = useState<string | null>(null)
     const [isTestComplete, setIsTestComplete] = useState(false)
     const [syncing, setSyncing] = useState(false)
+    const [refreshing, setRefreshing] = useState(false)
 
     useEffect(() => {
         const fetchModels = async () => {
@@ -496,6 +497,69 @@ export default function ModelsPage() {
             )
         } finally {
             setSyncing(false)
+        }
+    }
+
+    const handleRefreshPrices = async () => {
+        try {
+            setRefreshing(true)
+
+            const token = localStorage.getItem('access_token')
+            const response = await fetch('/api/v1/models/refresh-prices', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+            })
+
+            const data = await response.json()
+
+            if (!response.ok) {
+                throw new Error(data.error || t('models.refreshFail'))
+            }
+
+            const refreshedModels: {
+                id: string
+                success: boolean
+                input_price?: number
+                output_price?: number
+            }[] = data.refreshedModels || []
+
+            if (refreshedModels.length > 0) {
+                setModels((prev) =>
+                    prev.map((model) => {
+                        const refreshedModel = refreshedModels.find(
+                            (m) => m.id === model.id && m.success
+                        )
+                        if (
+                            refreshedModel &&
+                            refreshedModel.input_price !== undefined &&
+                            refreshedModel.output_price !== undefined
+                        ) {
+                            return {
+                                ...model,
+                                input_price: refreshedModel.input_price,
+                                output_price: refreshedModel.output_price,
+                            }
+                        }
+                        return model
+                    })
+                )
+
+                if (refreshedModels.every((m) => m.success)) {
+                    toast.success(t('models.refreshSuccess'))
+                } else {
+                    toast.warning(t('models.refreshPartial'))
+                }
+            }
+        } catch (error) {
+            console.error('Refresh prices from LiteLLM failed:', error)
+            toast.error(
+                error instanceof Error ? error.message : t('models.refreshFail')
+            )
+        } finally {
+            setRefreshing(false)
         }
     }
 
@@ -1004,6 +1068,44 @@ export default function ModelsPage() {
                         ? t('models.syncing')
                         : t('models.syncAllDerivedModels')}
                     <Tooltip title={t('models.syncTooltip')}>
+                        <InfoCircleOutlined className="h-3.5 w-3.5 text-white/80 hover:text-white" />
+                    </Tooltip>
+                </Button>
+
+                <Button
+                    variant="default"
+                    size="default"
+                    onClick={handleRefreshPrices}
+                    className="relative flex items-center gap-2 px-4 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white shadow-sm hover:shadow-md transition-all duration-200"
+                    disabled={refreshing}
+                >
+                    <motion.div
+                        animate={refreshing ? { rotate: 360 } : { rotate: 0 }}
+                        transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: 'linear',
+                        }}
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-4 w-4"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M12 9.75v6.75m0 0l-3-3m3 3l3-3m-8.25 6a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z"
+                            />
+                        </svg>
+                    </motion.div>
+                    {refreshing
+                        ? t('models.refreshing')
+                        : t('models.refreshFromLitellm')}
+                    <Tooltip title={t('models.refreshTooltip')}>
                         <InfoCircleOutlined className="h-3.5 w-3.5 text-white/80 hover:text-white" />
                     </Tooltip>
                 </Button>

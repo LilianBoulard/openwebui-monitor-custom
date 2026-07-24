@@ -98,6 +98,12 @@
         "noDerivedModels": "No derived models found",
         "syncing": "Syncing",
         "syncTooltip": "Sync prices from base models to all derived models. This will update prices of all derived models based on their base model prices.",
+        "refreshFromLitellm": "Refresh Prices from LiteLLM",
+        "refreshing": "Refreshing",
+        "refreshSuccess": "All model prices refreshed from LiteLLM",
+        "refreshPartial": "Some models are not in the LiteLLM pricing list and were skipped",
+        "refreshFail": "Failed to refresh prices from LiteLLM",
+        "refreshTooltip": "Overwrite the per-token prices of all models with the current values from LiteLLM's pricing list. Per-message prices are left untouched.",
         "testTooltip": "Click model icon to test individually, test results will be shown in the top right corner of the icon.",
         "test": {
             "status": {

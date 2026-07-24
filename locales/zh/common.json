@@ -98,6 +98,12 @@
         "noDerivedModels": "没有找到派生模型",
         "syncing": "同步中",
         "syncTooltip": "将基础模型的价格同步到所有派生模型。这将根据基础模型的价格更新所有派生模型的价格。",
+        "refreshFromLitellm": "从 LiteLLM 刷新价格",
+        "refreshing": "刷新中",
+        "refreshSuccess": "所有模型价格已从 LiteLLM 刷新",
+        "refreshPartial": "部分模型不在 LiteLLM 价格表中，已跳过",
+        "refreshFail": "从 LiteLLM 刷新价格失败",
+        "refreshTooltip": "使用 LiteLLM 价格表的最新数值覆盖所有模型的每 token 价格。每条消息价格保持不变。",
         "testTooltip": "点击模型图标可进行单独测试，测试结果将显示在图标右上角。",
         "test": {
             "status": {
