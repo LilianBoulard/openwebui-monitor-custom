@@ -15,13 +15,13 @@ RUN apk add --no-cache \
     postgresql-client
 
 # 全局安装 pnpm
-RUN npm install -g pnpm --registry=https://registry.npmmirror.com
+RUN npm install -g pnpm
 
 # 复制 package.json 和 pnpm-lock.yaml
 COPY package.json pnpm-lock.yaml ./
 
 # 安装依赖
-RUN pnpm install --no-frozen-lockfile --registry=https://registry.npmmirror.com
+RUN pnpm install --no-frozen-lockfile --dangerously-allow-all-builds
 
 # 复制项目文件
 COPY . .
