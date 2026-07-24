@@ -47,9 +47,9 @@ sudo docker compose up -d
 
 | 变量名                      | 说明                                                                                                                       | 默认值 |
 | --------------------------- | -------------------------------------------------------------------------------------------------------------------------- | ------ |
-| DEFAULT_MODEL_INPUT_PRICE   | 默认模型输入价格，单位为元/百万 tokens                                                                                     | `60`   |
-| DEFAULT_MODEL_OUTPUT_PRICE  | 默认模型输出价格，单位为元/百万 tokens                                                                                     | `60`   |
 | DEFAULT_MODEL_PER_MSG_PRICE | 模型默认每条消息价格，设为负数将按 token 计费                                                                              | `-1`   |
+
+模型默认单价在启动时从 [LiteLLM 价格表](https://github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json) 获取；若无法加载该列表，应用将拒绝启动。
 | INIT_BALANCE                | 用户初始余额                                                                                                               | `0`    |
 | COST_ON_INLET               | inlet 时的预扣费金额。可以是所有模型统一的固定数字（如 `0.1`），也可以是针对不同模型的配置（如 `gpt-4:0.32,gpt-3.5:0.01`） | `0`    |
 

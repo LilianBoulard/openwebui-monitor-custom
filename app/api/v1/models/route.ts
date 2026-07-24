@@ -108,11 +108,9 @@ export async function GET(req: Request) {
 
         const validModels = Array.from(apiModelsMap.entries()).map(
             ([id, apiModel]) => {
-                const dbModel = dbModelsMap.get(id) || {
-                    input_price: 60,
-                    output_price: 60,
-                    per_msg_price: -1,
-                    updated_at: new Date(),
+                const dbModel = dbModelsMap.get(id)
+                if (!dbModel) {
+                    throw new Error(`No price record found for model ${id}`)
                 }
 
                 let baseModelId = apiModel.base_model_id

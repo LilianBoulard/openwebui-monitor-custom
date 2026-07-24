@@ -4,6 +4,7 @@ import { Pool, PoolClient } from 'pg'
 import { createClient } from '@vercel/postgres'
 import { query, getClient } from '@/lib/db/client'
 import { getModelInletCost } from '@/lib/utils/inlet-cost'
+import { resolveModelPrice } from '@/lib/utils/model-pricing'
 
 const isVercel = process.env.VERCEL === '1'
 
@@ -22,10 +23,10 @@ interface ModelPrice {
 
 type DbClient = ReturnType<typeof createClient> | Pool | PoolClient
 
-async function getModelPrice(modelId: string): Promise<ModelPrice | null> {
+async function getModelPrice(modelId: string): Promise<ModelPrice> {
     const result = await query(
-        `SELECT id, name, input_price, output_price, per_msg_price 
-     FROM model_prices 
+        `SELECT id, name, input_price, output_price, per_msg_price
+     FROM model_prices
      WHERE id = $1`,
         [modelId]
     )
@@ -34,27 +35,13 @@ async function getModelPrice(modelId: string): Promise<ModelPrice | null> {
         return result.rows[0]
     }
 
-    const defaultInputPrice = parseFloat(
-        process.env.DEFAULT_MODEL_INPUT_PRICE || '60'
-    )
-    const defaultOutputPrice = parseFloat(
-        process.env.DEFAULT_MODEL_OUTPUT_PRICE || '60'
-    )
-
-    if (
-        isNaN(defaultInputPrice) ||
-        defaultInputPrice < 0 ||
-        isNaN(defaultOutputPrice) ||
-        defaultOutputPrice < 0
-    ) {
-        return null
-    }
+    const litellmPrice = await resolveModelPrice(modelId)
 
     return {
         id: modelId,
         name: modelId,
-        input_price: defaultInputPrice,
-        output_price: defaultOutputPrice,
+        input_price: litellmPrice.input_price,
+        output_price: litellmPrice.output_price,
         per_msg_price: -1,
     }
 }
@@ -78,9 +65,6 @@ export async function POST(req: Request) {
         await query('BEGIN')
 
         const modelPrice = await getModelPrice(modelId)
-        if (!modelPrice) {
-            throw new Error(`Fail to fetch price info of model ${modelId}`)
-        }
 
         const lastMessage = data.body.messages[data.body.messages.length - 1]
 

@@ -4,6 +4,8 @@ import {
 } from '@vercel/postgres'
 import { Pool, PoolClient } from 'pg'
 
+import { resolveModelPrice } from '@/lib/utils/model-pricing'
+
 const isVercel = process.env.VERCEL === '1'
 
 let vercelPool: {
@@ -191,12 +193,6 @@ export async function ensureTablesExist() {
       );
     `)
 
-        const defaultInputPrice = parseFloat(
-            process.env.DEFAULT_MODEL_INPUT_PRICE || '60'
-        )
-        const defaultOutputPrice = parseFloat(
-            process.env.DEFAULT_MODEL_OUTPUT_PRICE || '60'
-        )
         const defaultPerMsgPrice = parseFloat(
             process.env.DEFAULT_MODEL_PER_MSG_PRICE || '-1'
         )
@@ -207,8 +203,8 @@ export async function ensureTablesExist() {
           id TEXT PRIMARY KEY,
           name TEXT NOT NULL,
           base_model_id TEXT,
-          input_price NUMERIC(10, 6) DEFAULT ${defaultInputPrice},
-          output_price NUMERIC(10, 6) DEFAULT ${defaultOutputPrice},
+          input_price NUMERIC(10, 6) NOT NULL,
+          output_price NUMERIC(10, 6) NOT NULL,
           per_msg_price NUMERIC(10, 6) DEFAULT ${defaultPerMsgPrice},
           updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
         );
@@ -313,12 +309,6 @@ export async function getOrCreateModelPrices(
     models: Array<{ id: string; name: string; base_model_id?: string }>
 ): Promise<ModelPrice[]> {
     try {
-        const defaultInputPrice = parseFloat(
-            process.env.DEFAULT_MODEL_INPUT_PRICE || '60'
-        )
-        const defaultOutputPrice = parseFloat(
-            process.env.DEFAULT_MODEL_OUTPUT_PRICE || '60'
-        )
         const defaultPerMsgPrice = parseFloat(
             process.env.DEFAULT_MODEL_PER_MSG_PRICE || '-1'
         )
@@ -363,6 +353,20 @@ export async function getOrCreateModelPrices(
                     ? baseModels.get(model.base_model_id)
                     : null
 
+                const prices = baseModel
+                    ? {
+                          input_price: baseModel.input_price,
+                          output_price: baseModel.output_price,
+                          per_msg_price: baseModel.per_msg_price,
+                      }
+                    : {
+                          ...(await resolveModelPrice(
+                              model.id,
+                              model.base_model_id
+                          )),
+                          per_msg_price: defaultPerMsgPrice,
+                      }
+
                 await query(
                     `INSERT INTO model_prices (id, name, input_price, output_price, per_msg_price)
            VALUES ($1, $2, $3, $4, $5)
@@ -370,9 +374,9 @@ export async function getOrCreateModelPrices(
                     [
                         model.id,
                         model.name,
-                        baseModel?.input_price ?? defaultInputPrice,
-                        baseModel?.output_price ?? defaultOutputPrice,
-                        baseModel?.per_msg_price ?? defaultPerMsgPrice,
+                        prices.input_price,
+                        prices.output_price,
+                        prices.per_msg_price,
                     ]
                 )
             }

@@ -47,9 +47,9 @@ sudo docker compose up -d
 
 | Nombre de Variable          | Descripción                                                                                                                                                  | Valor Predeterminado |
 | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------- |
-| DEFAULT_MODEL_INPUT_PRICE   | Precio de entrada predeterminado del modelo, en USD por millón de tokens                                                                                     | `60`                 |
-| DEFAULT_MODEL_OUTPUT_PRICE  | Precio de salida predeterminado del modelo, en USD por millón de tokens                                                                                      | `60`                 |
 | DEFAULT_MODEL_PER_MSG_PRICE | Precio predeterminado del modelo por cada mensaje, en USD                                                                                                    | `-1`                 |
+
+Los precios por token predeterminados se obtienen al inicio desde la [lista de precios de LiteLLM](https://github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json); la aplicación se niega a iniciar si no puede cargar la lista.
 | INIT_BALANCE                | Saldo inicial del usuario                                                                                                                                    | `0`                  |
 | COST_ON_INLET               | Monto de prededucción en inlet. Puede ser un número fijo para todos los modelos (ej. `0.1`), o formato específico por modelo (ej. `gpt-4:0.32,gpt-3.5:0.01`) | `0`                  |
 

@@ -283,14 +283,7 @@ export default function ModelsPage() {
                     throw new Error(t('error.model.failToFetchModels'))
                 }
                 const data = (await response.json()) as ModelResponse[]
-                setModels(
-                    data.map((model: ModelResponse) => ({
-                        ...model,
-                        input_price: model.input_price ?? 60,
-                        output_price: model.output_price ?? 60,
-                        per_msg_price: model.per_msg_price ?? -1,
-                    }))
-                )
+                setModels(data)
             } catch (err) {
                 setError(
                     err instanceof Error

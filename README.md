@@ -47,13 +47,13 @@ sudo docker compose up -d
 
 ### Optional
 
-| Variable Name               | Description                                                                                                                                 | Default Value |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------- |
-| DEFAULT_MODEL_INPUT_PRICE   | Default model input price, in USD per million tokens                                                                                        | `60`          |
-| DEFAULT_MODEL_OUTPUT_PRICE  | Default model output price, in USD per million tokens                                                                                       | `60`          |
-| DEFAULT_MODEL_PER_MSG_PRICE | Default model price for each message, in USD                                                                                                | `-1`          |
-| INIT_BALANCE                | Initial user balance                                                                                                                        | `0`           |
-| COST_ON_INLET               | Pre-deduction amount on inlet. Can be a fixed number for all models (e.g. `0.1`), or model-specific format (e.g. `gpt-4:0.32,gpt-3.5:0.01`) | `0`           |
+| Variable Name               | Description                                  | Default Value |
+| --------------------------- | -------------------------------------------- | ------------- |
+| DEFAULT_MODEL_PER_MSG_PRICE | Default model price for each message, in USD | `-1`          |
+
+Default per-token prices are fetched at startup from [LiteLLM's pricing list](https://github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json); the app refuses to start if the list cannot be loaded.
+| INIT_BALANCE | Initial user balance | `0` |
+| COST_ON_INLET | Pre-deduction amount on inlet. Can be a fixed number for all models (e.g. `0.1`), or model-specific format (e.g. `gpt-4:0.32,gpt-3.5:0.01`) | `0` |
 
 ## Function Variable Configuration
 
