@@ -81,7 +81,7 @@ class Filter:
         text = TRANSLATIONS[lang].get(key, TRANSLATIONS["en"][key])
         return text.format(**kwargs) if kwargs else text
 
-    async def request(
+    async def _post(
         self, client: AsyncClient, url: str, headers: dict, json_data: dict
     ):
         json_data = json.loads(
@@ -114,7 +114,7 @@ class Filter:
         client = AsyncClient()
 
         try:
-            response_data = await self.request(
+            response_data = await self._post(
                 client=client,
                 url=f"{self.valves.api_endpoint}/api/v1/inlet",
                 headers={"Authorization": f"Bearer {self.valves.api_key}"},
@@ -160,7 +160,7 @@ class Filter:
         client = AsyncClient()
 
         try:
-            response_data = await self.request(
+            response_data = await self._post(
                 client=client,
                 url=f"{self.valves.api_endpoint}/api/v1/outlet",
                 headers={"Authorization": f"Bearer {self.valves.api_key}"},
